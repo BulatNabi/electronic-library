@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <%- include('../partials/header') %>
+
+  <main class="container">
+    <div class="page-header">
+      <h1><%= title %></h1>
+    </div>
+
+    <% if (stats.length === 0 || stats.every(s => s.download_count === 0)) { %>
+      <p class="empty-state">Скачиваний пока не было.</p>
+    <% } %>
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Название документа</th>
+          <th>Автор</th>
+          <th>Количество скачиваний</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% stats.forEach(s => { %>
+          <tr>
+            <td><%= s.ID_Document %></td>
+            <td><%= s.Title %></td>
+            <td><%= s.Author %></td>
+            <td><%= s.download_count %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </main>
+</body>
+</html>

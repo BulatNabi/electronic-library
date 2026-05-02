@@ -1,0 +1,24 @@
+<header class="header">
+  <div class="header-container">
+    <a href="/" class="logo">Электронная библиотека документов</a>
+    <% if (currentUser) { %>
+      <nav class="nav">
+        <% if (currentUser.role === 'Администратор') { %>
+          <a href="/admin/users" class="nav-link">Пользователи</a>
+        <% } else if (currentUser.role === 'Библиотекарь') { %>
+          <a href="/librarian/documents" class="nav-link">Документы</a>
+          <a href="/librarian/categories" class="nav-link">Категории</a>
+          <a href="/librarian/stats" class="nav-link">Статистика</a>
+        <% } else { %>
+          <a href="/reader" class="nav-link">Каталог</a>
+          <a href="/reader/favorites" class="nav-link">Избранное</a>
+        <% } %>
+      </nav>
+      <div class="user-info">
+        <span class="user-name"><%= currentUser.fullName %></span>
+        <span class="user-role">(<%= currentUser.role %>)</span>
+        <a href="/auth/logout" class="btn btn-sm btn-outline">Выход</a>
+      </div>
+    <% } %>
+  </div>
+</header>

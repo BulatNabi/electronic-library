@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <%- include('../partials/header') %>
+  <%- include('../partials/notification') %>
+
+  <main class="container">
+    <div class="page-header">
+      <h1><%= title %></h1>
+      <button class="btn btn-primary" onclick="openAddCategoryModal()">Добавить категорию</button>
+    </div>
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Название</th>
+          <th>Количество документов</th>
+          <th>Действия</th>
+        </tr>
+      </thead>
+      <tbody id="categories-table-body">
+        <% categories.forEach(cat => { %>
+          <tr id="cat-row-<%= cat.ID_Category %>">
+            <td><%= cat.ID_Category %></td>
+            <td class="cat-name"><%= cat.Category_name %></td>
+            <td><%= cat.doc_count %></td>
+            <td class="actions">
+              <button class="btn btn-sm btn-outline" onclick="openEditCategoryModal(<%= cat.ID_Category %>, '<%= cat.Category_name %>')">Редактировать</button>
+              <button class="btn btn-sm btn-danger" onclick="deleteCategory(<%= cat.ID_Category %>, <%= cat.doc_count %>)">Удалить</button>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </main>
+
+  <!-- Add Category Modal -->
+  <div id="addCategoryModal" class="modal hidden">
+    <div class="modal-content modal-sm">
+      <div class="modal-header">
+        <h2>Добавить категорию</h2>
+        <button class="modal-close" onclick="closeModal('addCategoryModal')">&times;</button>
+      </div>
+      <form id="addCategoryForm" onsubmit="createCategory(event)">
+        <div class="form-group">
+          <label for="add-cat-name">Название</label>
+          <input type="text" id="add-cat-name" name="name" required class="form-control">
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Создать</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Edit Category Modal -->
+  <div id="editCategoryModal" class="modal hidden">
+    <div class="modal-content modal-sm">
+      <div class="modal-header">
+        <h2>Редактировать категорию</h2>
+        <button class="modal-close" onclick="closeModal('editCategoryModal')">&times;</button>
+      </div>
+      <form id="editCategoryForm" onsubmit="updateCategory(event)">
+        <input type="hidden" id="edit-catId">
+        <div class="form-group">
+          <label for="edit-cat-name">Название</label>
+          <input type="text" id="edit-cat-name" name="name" required class="form-control">
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Сохранить</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Confirm Modal -->
+  <div id="confirmModal" class="modal hidden">
+    <div class="modal-content modal-sm">
+      <div class="modal-header">
+        <h2>Подтверждение</h2>
+        <button class="modal-close" onclick="closeModal('confirmModal')">&times;</button>
+      </div>
+      <p id="confirm-text"></p>
+      <div class="modal-actions">
+        <button class="btn btn-danger" id="confirm-btn">Удалить</button>
+        <button class="btn btn-outline" onclick="closeModal('confirmModal')">Отмена</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/common.js"></script>
+  <script src="/js/librarian-categories.js"></script>
+</body>
+</html>

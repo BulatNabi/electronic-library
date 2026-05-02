@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <%- include('../partials/header') %>
+  <%- include('../partials/notification') %>
+
+  <main class="container">
+    <div class="page-header">
+      <h1>Избранное</h1>
+    </div>
+
+    <% if (favorites.length === 0) { %>
+      <p class="empty-state">В вашем списке избранного пока нет документов.</p>
+    <% } else { %>
+      <div class="documents-grid">
+        <% favorites.forEach(fav => { %>
+          <div class="doc-card" id="fav-card-<%= fav.ID_Document %>">
+            <div class="doc-card-header">
+              <h3 class="doc-title"><a href="/reader/documents/<%= fav.ID_Document %>"><%= fav.Title %></a></h3>
+              <span class="doc-category"><%= fav.Category_name || 'Без категории' %></span>
+            </div>
+            <div class="doc-card-body">
+              <p class="doc-author"><strong>Автор:</strong> <%= fav.Author %></p>
+              <p class="doc-year"><strong>Год:</strong> <%= fav.Year %></p>
+            </div>
+            <div class="doc-card-footer">
+              <a href="/reader/documents/<%= fav.ID_Document %>" class="btn btn-sm btn-outline">Подробнее</a>
+              <a href="/reader/documents/<%= fav.ID_Document %>/download" class="btn btn-sm btn-primary">Скачать</a>
+              <button class="btn btn-sm btn-danger" onclick="removeFavoriteFromList(<%= fav.ID_Document %>)">Удалить из избранного</button>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+  </main>
+
+  <script src="/js/common.js"></script>
+  <script src="/js/reader.js"></script>
+</body>
+</html>

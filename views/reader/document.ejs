@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <%- include('../partials/header') %>
+  <%- include('../partials/notification') %>
+
+  <main class="container">
+    <div class="breadcrumb">
+      <a href="/reader">Каталог</a> &rarr; <span><%= document.Title %></span>
+    </div>
+
+    <div class="document-detail">
+      <h1><%= document.Title %></h1>
+
+      <div class="document-meta">
+        <div class="meta-row">
+          <span class="meta-label">Автор:</span>
+          <span class="meta-value"><%= document.Author %></span>
+        </div>
+        <div class="meta-row">
+          <span class="meta-label">Год издания:</span>
+          <span class="meta-value"><%= document.Year %></span>
+        </div>
+        <div class="meta-row">
+          <span class="meta-label">Категория:</span>
+          <span class="meta-value"><%= document.Category_name || 'Без категории' %></span>
+        </div>
+        <div class="meta-row">
+          <span class="meta-label">Дата загрузки:</span>
+          <span class="meta-value"><%= new Date(document.Upload_date).toLocaleDateString('ru-RU') %></span>
+        </div>
+      </div>
+
+      <div class="document-annotation">
+        <h2>Аннотация</h2>
+        <p><%= document.Annotation %></p>
+      </div>
+
+      <div class="document-actions">
+        <a href="/reader/documents/<%= document.ID_Document %>/download" class="btn btn-primary">Скачать документ</a>
+        <% if (isFavorite) { %>
+          <button class="btn btn-favorite active" onclick="toggleFavorite(<%= document.ID_Document %>, this)" data-fav="true">&#9733; Удалить из избранного</button>
+        <% } else { %>
+          <button class="btn btn-favorite" onclick="toggleFavorite(<%= document.ID_Document %>, this)" data-fav="false">&#9734; Добавить в избранное</button>
+        <% } %>
+        <a href="/reader" class="btn btn-outline">Назад к каталогу</a>
+      </div>
+    </div>
+  </main>
+
+  <script src="/js/common.js"></script>
+  <script src="/js/reader.js"></script>
+</body>
+</html>

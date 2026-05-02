@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <%- include('../partials/header') %>
+  <%- include('../partials/notification') %>
+
+  <main class="container">
+    <div class="page-header">
+      <h1><%= title %></h1>
+      <button class="btn btn-primary" onclick="openAddDocModal()">Добавить документ</button>
+    </div>
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Название</th>
+          <th>Автор</th>
+          <th>Год</th>
+          <th>Категория</th>
+          <th>Дата загрузки</th>
+          <th>Действия</th>
+        </tr>
+      </thead>
+      <tbody id="docs-table-body">
+        <% documents.forEach(doc => { %>
+          <tr id="doc-row-<%= doc.ID_Document %>">
+            <td><%= doc.ID_Document %></td>
+            <td><%= doc.Title %></td>
+            <td><%= doc.Author %></td>
+            <td><%= doc.Year %></td>
+            <td><%= doc.Category_name || 'Без категории' %></td>
+            <td><%= new Date(doc.Upload_date).toLocaleDateString('ru-RU') %></td>
+            <td class="actions">
+              <button class="btn btn-sm btn-outline" onclick="openEditDocModal(<%= doc.ID_Document %>)">Редактировать</button>
+              <button class="btn btn-sm btn-danger" onclick="deleteDocument(<%= doc.ID_Document %>)">Удалить</button>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+
+    <% if (documents.length === 0) { %>
+      <p class="empty-state">Документов пока нет. Добавьте первый документ.</p>
+    <% } %>
+  </main>
+
+  <!-- Add Document Modal -->
+  <div id="addDocModal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Добавить документ</h2>
+        <button class="modal-close" onclick="closeModal('addDocModal')">&times;</button>
+      </div>
+      <form id="addDocForm" onsubmit="uploadDocument(event)" enctype="multipart/form-data">
+        <div class="form-group">
+          <label for="add-title">Название</label>
+          <input type="text" id="add-title" name="title" required class="form-control">
+        </div>
+        <div class="form-group">
+          <label for="add-author">Автор</label>
+          <input type="text" id="add-author" name="author" required class="form-control">
+        </div>
+        <div class="form-group">
+          <label for="add-year">Год издания</label>
+          <input type="number" id="add-year" name="year" required min="1900" max="2100" class="form-control">
+        </div>
+        <div class="form-group">
+          <label for="add-annotation">Аннотация</label>
+          <textarea id="add-annotation" name="annotation" required class="form-control" rows="4"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="add-categoryId">Категория</label>
+          <select id="add-categoryId" name="categoryId" required class="form-control">
+            <% categories.forEach(cat => { %>
+              <option value="<%= cat.ID_Category %>"><%= cat.Category_name %></option>
+            <% }) %>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="add-file">Файл документа</label>
+          <input type="file" id="add-file" name="file" required class="form-control"
+                 accept=".pdf,.doc,.docx,.txt,.rtf,.xls,.xlsx,.ppt,.pptx">
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Загрузить</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Edit Document Modal -->
+  <div id="editDocModal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Редактировать документ</h2>
+        <button class="modal-close" onclick="closeModal('editDocModal')">&times;</button>
+      </div>
+      <form id="editDocForm" onsubmit="updateDocument(event)">
+        <input type="hidden" id="edit-docId">
+        <div class="form-group">
+          <label for="edit-title">Название</label>
+          <input type="text" id="edit-title" name="title" required class="form-control">
+        </div>
+        <div class="form-group">
+          <label for="edit-author">Автор</label>
+          <input type="text" id="edit-author" name="author" required class="form-control">
+        </div>
+        <div class="form-group">
+          <label for="edit-year">Год издания</label>
+          <input type="number" id="edit-year" name="year" required min="1900" max="2100" class="form-control">
+        </div>
+        <div class="form-group">
+          <label for="edit-annotation">Аннотация</label>
+          <textarea id="edit-annotation" name="annotation" required class="form-control" rows="4"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="edit-categoryId">Категория</label>
+          <select id="edit-categoryId" name="categoryId" required class="form-control">
+            <% categories.forEach(cat => { %>
+              <option value="<%= cat.ID_Category %>"><%= cat.Category_name %></option>
+            <% }) %>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Сохранить</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Confirm Modal -->
+  <div id="confirmModal" class="modal hidden">
+    <div class="modal-content modal-sm">
+      <div class="modal-header">
+        <h2>Подтверждение</h2>
+        <button class="modal-close" onclick="closeModal('confirmModal')">&times;</button>
+      </div>
+      <p id="confirm-text">Вы уверены, что хотите удалить этот документ?</p>
+      <div class="modal-actions">
+        <button class="btn btn-danger" id="confirm-btn">Удалить</button>
+        <button class="btn btn-outline" onclick="closeModal('confirmModal')">Отмена</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/common.js"></script>
+  <script src="/js/librarian.js"></script>
+</body>
+</html>
