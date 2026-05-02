@@ -55,14 +55,17 @@ test.describe('Admin - User Management', () => {
     await page.waitForURL('**/admin/**');
   });
 
-  test('user list displays users', async ({ page }) => {
-    await expect(page.locator('#users-table-body tr')).toHaveCount(3);
+  test('user list displays at least 3 users', async ({ page }) => {
+    const rows = page.locator('#users-table-body tr');
+    const count = await rows.count();
+    expect(count).toBeGreaterThanOrEqual(3);
   });
 
   test('can create a new user', async ({ page }) => {
+    const unique = Date.now();
     await page.click('text=Добавить пользователя');
-    await page.fill('#add-fullName', 'Тестовый Пользователь');
-    await page.fill('#add-email', 'test@library.ru');
+    await page.fill('#add-fullName', 'Тестовый Пользователь ' + unique);
+    await page.fill('#add-email', `test${unique}@library.ru`);
     await page.selectOption('#add-roleId', '3');
     await page.click('#addUserForm button[type="submit"]');
 
@@ -87,31 +90,40 @@ test.describe('Librarian - Document Management', () => {
     await page.waitForURL('**/librarian/**');
   });
 
-  test('documents page loads', async ({ page }) => {
+  test('documents page loads with documents', async ({ page }) => {
     await expect(page.locator('.page-header h1')).toContainText('Управление документами');
+    const rows = page.locator('#docs-table-body tr');
+    const count = await rows.count();
+    expect(count).toBeGreaterThanOrEqual(1);
   });
 
-  test('categories page loads', async ({ page }) => {
+  test('categories page loads with categories', async ({ page }) => {
     await page.click('text=Категории');
     await expect(page.locator('.page-header h1')).toContainText('Управление категориями');
-    await expect(page.locator('#categories-table-body tr')).toHaveCount(5);
+    const rows = page.locator('#categories-table-body tr');
+    const count = await rows.count();
+    expect(count).toBeGreaterThanOrEqual(5);
   });
 
   test('can create a category', async ({ page }) => {
+    const unique = Date.now();
     await page.click('text=Категории');
     await page.click('text=Добавить категорию');
-    await page.fill('#add-cat-name', 'Тестовая категория');
+    await page.fill('#add-cat-name', 'Тест ' + unique);
     await page.click('#addCategoryForm button[type="submit"]');
     await expect(page.locator('.notification.success')).toBeVisible({ timeout: 5000 });
   });
 
-  test('stats page loads', async ({ page }) => {
+  test('stats page loads with documents', async ({ page }) => {
     await page.click('text=Статистика');
     await expect(page.locator('.page-header h1')).toContainText('Статистика скачиваний');
+    const rows = page.locator('table tbody tr');
+    const count = await rows.count();
+    expect(count).toBeGreaterThanOrEqual(1);
   });
 });
 
-test.describe('Reader - Catalog', () => {
+test.describe('Reader - Catalog & Documents', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto(`${BASE}/auth/login`);
     await page.fill('#login', 'reader');
@@ -120,14 +132,49 @@ test.describe('Reader - Catalog', () => {
     await page.waitForURL('**/reader**');
   });
 
-  test('catalog page loads with search', async ({ page }) => {
+  test('catalog page loads with documents and search', async ({ page }) => {
     await expect(page.locator('#search-query')).toBeVisible();
     await expect(page.locator('#search-category')).toBeVisible();
+    const cards = page.locator('.doc-card');
+    const count = await cards.count();
+    expect(count).toBeGreaterThanOrEqual(1);
+  });
+
+  test('can open document card', async ({ page }) => {
+    await page.click('.doc-card:first-child .doc-title a');
+    await expect(page.locator('.document-detail h1')).toBeVisible();
+    await expect(page.locator('.document-annotation')).toBeVisible();
+    await expect(page.locator('text=Скачать документ')).toBeVisible();
+  });
+
+  test('search filters documents', async ({ page }) => {
+    await page.fill('#search-query', 'JavaScript');
+    await page.click('#searchForm button[type="submit"]');
+    await page.waitForURL('**/reader/search**');
+    const cards = page.locator('.doc-card');
+    const count = await cards.count();
+    expect(count).toBeGreaterThanOrEqual(1);
+  });
+
+  test('can add to favorites', async ({ page }) => {
+    await page.click('.doc-card:first-child .doc-title a');
+    const favBtn = page.locator('.btn-favorite');
+    await favBtn.click();
+    await expect(page.locator('.notification')).toBeVisible({ timeout: 5000 });
   });
 
   test('favorites page loads', async ({ page }) => {
     await page.click('text=Избранное');
     await expect(page.locator('.page-header h1')).toContainText('Избранное');
+  });
+
+  test('can download document', async ({ page }) => {
+    await page.click('.doc-card:first-child .doc-title a');
+    const [download] = await Promise.all([
+      page.waitForEvent('download'),
+      page.click('text=Скачать документ'),
+    ]);
+    expect(download).toBeTruthy();
   });
 });
 
