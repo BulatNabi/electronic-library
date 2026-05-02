@@ -1,0 +1,63 @@
+-- Создание базы данных
+CREATE DATABASE IF NOT EXISTS document_library
+  CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci;
+
+USE document_library;
+
+-- Таблица ролей
+CREATE TABLE IF NOT EXISTS Roles (
+  ID_Role INT AUTO_INCREMENT PRIMARY KEY,
+  Role_name VARCHAR(32) NOT NULL UNIQUE
+) ENGINE=InnoDB;
+
+-- Таблица пользователей
+CREATE TABLE IF NOT EXISTS Users (
+  ID_User INT AUTO_INCREMENT PRIMARY KEY,
+  Login VARCHAR(64) NOT NULL UNIQUE,
+  Password VARCHAR(255) NOT NULL,
+  FullName VARCHAR(128) NOT NULL,
+  Email VARCHAR(128) NOT NULL UNIQUE,
+  ID_Role INT NOT NULL,
+  FOREIGN KEY (ID_Role) REFERENCES Roles(ID_Role)
+) ENGINE=InnoDB;
+
+-- Таблица категорий
+CREATE TABLE IF NOT EXISTS Categories (
+  ID_Category INT AUTO_INCREMENT PRIMARY KEY,
+  Category_name VARCHAR(128) NOT NULL UNIQUE
+) ENGINE=InnoDB;
+
+-- Таблица документов
+CREATE TABLE IF NOT EXISTS Documents (
+  ID_Document INT AUTO_INCREMENT PRIMARY KEY,
+  Title VARCHAR(255) NOT NULL,
+  Author VARCHAR(128) NOT NULL,
+  Year INT NOT NULL,
+  Annotation TEXT,
+  File_path VARCHAR(255) NOT NULL,
+  ID_Category INT,
+  Upload_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (ID_Category) REFERENCES Categories(ID_Category) ON DELETE SET NULL
+) ENGINE=InnoDB;
+
+-- Таблица избранного
+CREATE TABLE IF NOT EXISTS Favorites (
+  ID_Favorite INT AUTO_INCREMENT PRIMARY KEY,
+  ID_User INT NOT NULL,
+  ID_Document INT NOT NULL,
+  Added_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY unique_fav (ID_User, ID_Document),
+  FOREIGN KEY (ID_User) REFERENCES Users(ID_User) ON DELETE CASCADE,
+  FOREIGN KEY (ID_Document) REFERENCES Documents(ID_Document) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+-- Таблица статистики скачиваний
+CREATE TABLE IF NOT EXISTS DownloadStats (
+  ID_Download INT AUTO_INCREMENT PRIMARY KEY,
+  ID_User INT NOT NULL,
+  ID_Document INT NOT NULL,
+  Download_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (ID_User) REFERENCES Users(ID_User) ON DELETE CASCADE,
+  FOREIGN KEY (ID_Document) REFERENCES Documents(ID_Document) ON DELETE CASCADE
+) ENGINE=InnoDB;
