@@ -62,7 +62,20 @@ exports.updateDocument = async (req, res) => {
       return res.status(400).json({ error: 'Все обязательные поля должны быть заполнены.' });
     }
 
-    await Document.update(req.params.id, { title, author, year: parseInt(year), annotation, categoryId: parseInt(categoryId) });
+    // If a new file was uploaded, replace the old one
+    let newFilePath = null;
+    if (req.file) {
+      newFilePath = req.file.filename;
+      const doc = await Document.findById(req.params.id);
+      if (doc) {
+        const oldFile = path.join(__dirname, '..', 'public', 'uploads', doc.File_path);
+        if (fs.existsSync(oldFile)) {
+          fs.unlinkSync(oldFile);
+        }
+      }
+    }
+
+    await Document.update(req.params.id, { title, author, year: parseInt(year), annotation, categoryId: parseInt(categoryId), filePath: newFilePath });
     res.json({ success: true, message: 'Изменения успешно сохранены.' });
   } catch (err) {
     console.error(err);

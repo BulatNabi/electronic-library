@@ -35,7 +35,7 @@ router.get('/', librarianController.dashboard);
 router.get('/documents', librarianController.documentList);
 router.post('/documents', upload.single('file'), librarianController.uploadDocument);
 router.get('/documents/:id', librarianController.getDocument);
-router.put('/documents/:id', librarianController.updateDocument);
+router.put('/documents/:id', upload.single('file'), librarianController.updateDocument);
 router.delete('/documents/:id', librarianController.deleteDocument);
 
 // Categories

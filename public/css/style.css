@@ -203,6 +203,13 @@ textarea.form-control {
   resize: vertical;
 }
 
+.form-hint {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  color: #94a3b8;
+}
+
 /* === Tables === */
 .table {
   width: 100%;

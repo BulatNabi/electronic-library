@@ -30,12 +30,20 @@ class Document {
     return result.insertId;
   }
 
-  static async update(id, { title, author, year, annotation, categoryId }) {
-    await db.query(
-      `UPDATE Documents SET Title = ?, Author = ?, Year = ?, Annotation = ?, ID_Category = ?
-       WHERE ID_Document = ?`,
-      [title, author, year, annotation, categoryId, id]
-    );
+  static async update(id, { title, author, year, annotation, categoryId, filePath }) {
+    if (filePath) {
+      await db.query(
+        `UPDATE Documents SET Title = ?, Author = ?, Year = ?, Annotation = ?, ID_Category = ?, File_path = ?
+         WHERE ID_Document = ?`,
+        [title, author, year, annotation, categoryId, filePath, id]
+      );
+    } else {
+      await db.query(
+        `UPDATE Documents SET Title = ?, Author = ?, Year = ?, Annotation = ?, ID_Category = ?
+         WHERE ID_Document = ?`,
+        [title, author, year, annotation, categoryId, id]
+      );
+    }
   }
 
   static async delete(id) {

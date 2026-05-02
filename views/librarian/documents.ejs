@@ -100,7 +100,7 @@
         <h2>Редактировать документ</h2>
         <button class="modal-close" onclick="closeModal('editDocModal')">&times;</button>
       </div>
-      <form id="editDocForm" onsubmit="updateDocument(event)">
+      <form id="editDocForm" onsubmit="updateDocument(event)" enctype="multipart/form-data">
         <input type="hidden" id="edit-docId">
         <div class="form-group">
           <label for="edit-title">Название</label>
@@ -125,6 +125,12 @@
               <option value="<%= cat.ID_Category %>"><%= cat.Category_name %></option>
             <% }) %>
           </select>
+        </div>
+        <div class="form-group">
+          <label for="edit-file">Заменить файл (необязательно)</label>
+          <input type="file" id="edit-file" name="file" class="form-control"
+                 accept=".pdf,.doc,.docx,.txt,.rtf,.xls,.xlsx,.ppt,.pptx">
+          <small class="form-hint">Оставьте пустым, чтобы сохранить текущий файл</small>
         </div>
         <button type="submit" class="btn btn-primary btn-block">Сохранить</button>
       </form>

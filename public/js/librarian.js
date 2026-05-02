@@ -40,15 +40,10 @@ function openEditDocModal(docId) {
 function updateDocument(e) {
   e.preventDefault();
   var docId = document.getElementById('edit-docId').value;
-  var data = {
-    title: document.getElementById('edit-title').value,
-    author: document.getElementById('edit-author').value,
-    year: document.getElementById('edit-year').value,
-    annotation: document.getElementById('edit-annotation').value,
-    categoryId: document.getElementById('edit-categoryId').value
-  };
+  var form = document.getElementById('editDocForm');
+  var formData = new FormData(form);
 
-  ajaxRequest('PUT', '/librarian/documents/' + docId, data, function(status, res) {
+  ajaxRequest('PUT', '/librarian/documents/' + docId, formData, function(status, res) {
     if (res.success) {
       showNotification(res.message, 'success');
       closeModal('editDocModal');
