@@ -1,5 +1,3 @@
-// Librarian categories JS
-
 function openAddCategoryModal() {
   document.getElementById('addCategoryForm').reset();
   openModal('addCategoryModal');

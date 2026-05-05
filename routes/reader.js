@@ -10,7 +10,6 @@ router.get('/search', readerController.search);
 router.get('/documents/:id', readerController.documentCard);
 router.get('/documents/:id/download', readerController.downloadDocument);
 
-// Favorites
 router.get('/favorites', readerController.favoritesList);
 router.post('/favorites/:id', readerController.addFavorite);
 router.delete('/favorites/:id', readerController.removeFavorite);

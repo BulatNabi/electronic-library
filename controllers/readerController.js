@@ -73,7 +73,6 @@ exports.downloadDocument = async (req, res) => {
       return res.status(404).json({ error: 'Файл временно недоступен.' });
     }
 
-    // Log download
     await DownloadStats.log(req.session.user.id, doc.ID_Document);
 
     res.download(filePath, doc.Title + path.extname(doc.File_path));

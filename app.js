@@ -11,17 +11,14 @@ const readerRoutes = require('./routes/reader');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// View engine
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-// Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Session
 app.use(session({
   secret: 'document-library-secret-key-2026',
   resave: false,
@@ -29,19 +26,16 @@ app.use(session({
   cookie: { maxAge: 24 * 60 * 60 * 1000 }
 }));
 
-// Make session user available in all EJS templates
 app.use((req, res, next) => {
   res.locals.currentUser = req.session.user || null;
   next();
 });
 
-// Routes
 app.use('/auth', authRoutes);
 app.use('/admin', adminRoutes);
 app.use('/librarian', librarianRoutes);
 app.use('/reader', readerRoutes);
 
-// Root redirect
 app.get('/', (req, res) => {
   if (req.session.user) {
     const role = req.session.user.role;
@@ -52,7 +46,6 @@ app.get('/', (req, res) => {
   res.redirect('/auth/login');
 });
 
-// 404
 app.use((req, res) => {
   res.status(404).render('layouts/error', {
     title: 'Страница не найдена',
@@ -61,7 +54,6 @@ app.use((req, res) => {
   });
 });
 
-// 500
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).render('layouts/error', {

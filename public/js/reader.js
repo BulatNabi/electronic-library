@@ -1,5 +1,3 @@
-// Reader JS
-
 function toggleFavorite(docId, btn) {
   var isFav = btn.getAttribute('data-fav') === 'true';
 
@@ -35,7 +33,6 @@ function removeFavoriteFromList(docId) {
       if (card) card.remove();
       showNotification(res.message, 'success');
 
-      // Check if list is empty
       var grid = document.querySelector('.documents-grid');
       if (grid && grid.children.length === 0) {
         grid.innerHTML = '<p class="empty-state">В вашем списке избранного пока нет документов.</p>';

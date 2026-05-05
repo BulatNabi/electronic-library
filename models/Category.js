@@ -46,7 +46,6 @@ class Category {
   }
 
   static async reassignDocuments(categoryId) {
-    // Find or create "Без категории"
     let [rows] = await db.query("SELECT ID_Category FROM Categories WHERE Category_name = 'Без категории'");
     let defaultCatId;
     if (rows.length === 0) {

@@ -92,7 +92,6 @@ exports.changeRole = async (req, res) => {
     const user = await User.findById(req.params.id);
     if (!user) return res.status(404).json({ error: 'Пользователь не найден' });
 
-    // Check: cannot remove the last admin
     if (user.Role_name === 'Администратор') {
       const admins = await User.countByRole(1);
       if (admins <= 1 && parseInt(roleId) !== 1) {

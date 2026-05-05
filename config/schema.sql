@@ -1,17 +1,14 @@
--- Создание базы данных
 CREATE DATABASE IF NOT EXISTS document_library
   CHARACTER SET utf8mb4
   COLLATE utf8mb4_unicode_ci;
 
 USE document_library;
 
--- Таблица ролей
 CREATE TABLE IF NOT EXISTS Roles (
   ID_Role INT AUTO_INCREMENT PRIMARY KEY,
   Role_name VARCHAR(32) NOT NULL UNIQUE
 ) ENGINE=InnoDB;
 
--- Таблица пользователей
 CREATE TABLE IF NOT EXISTS Users (
   ID_User INT AUTO_INCREMENT PRIMARY KEY,
   Login VARCHAR(64) NOT NULL UNIQUE,
@@ -22,13 +19,11 @@ CREATE TABLE IF NOT EXISTS Users (
   FOREIGN KEY (ID_Role) REFERENCES Roles(ID_Role)
 ) ENGINE=InnoDB;
 
--- Таблица категорий
 CREATE TABLE IF NOT EXISTS Categories (
   ID_Category INT AUTO_INCREMENT PRIMARY KEY,
   Category_name VARCHAR(128) NOT NULL UNIQUE
 ) ENGINE=InnoDB;
 
--- Таблица документов
 CREATE TABLE IF NOT EXISTS Documents (
   ID_Document INT AUTO_INCREMENT PRIMARY KEY,
   Title VARCHAR(255) NOT NULL,
@@ -41,7 +36,6 @@ CREATE TABLE IF NOT EXISTS Documents (
   FOREIGN KEY (ID_Category) REFERENCES Categories(ID_Category) ON DELETE SET NULL
 ) ENGINE=InnoDB;
 
--- Таблица избранного
 CREATE TABLE IF NOT EXISTS Favorites (
   ID_Favorite INT AUTO_INCREMENT PRIMARY KEY,
   ID_User INT NOT NULL,
@@ -52,7 +46,6 @@ CREATE TABLE IF NOT EXISTS Favorites (
   FOREIGN KEY (ID_Document) REFERENCES Documents(ID_Document) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
--- Таблица статистики скачиваний
 CREATE TABLE IF NOT EXISTS DownloadStats (
   ID_Download INT AUTO_INCREMENT PRIMARY KEY,
   ID_User INT NOT NULL,

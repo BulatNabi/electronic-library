@@ -8,8 +8,6 @@ exports.dashboard = (req, res) => {
   res.redirect('/librarian/documents');
 };
 
-// --- Documents ---
-
 exports.documentList = async (req, res) => {
   try {
     const documents = await Document.findAll();
@@ -62,7 +60,6 @@ exports.updateDocument = async (req, res) => {
       return res.status(400).json({ error: 'Все обязательные поля должны быть заполнены.' });
     }
 
-    // If a new file was uploaded, replace the old one
     let newFilePath = null;
     if (req.file) {
       newFilePath = req.file.filename;
@@ -88,7 +85,6 @@ exports.deleteDocument = async (req, res) => {
     const doc = await Document.findById(req.params.id);
     if (!doc) return res.status(404).json({ error: 'Документ не найден' });
 
-    // Delete file from storage
     const filePath = path.join(__dirname, '..', 'public', 'uploads', doc.File_path);
     if (fs.existsSync(filePath)) {
       fs.unlinkSync(filePath);
@@ -101,8 +97,6 @@ exports.deleteDocument = async (req, res) => {
     res.status(500).json({ error: 'Ошибка сервера' });
   }
 };
-
-// --- Categories ---
 
 exports.categoryList = async (req, res) => {
   try {
@@ -159,7 +153,6 @@ exports.deleteCategory = async (req, res) => {
     const docCount = await Category.getDocumentCount(req.params.id);
 
     if (docCount > 0) {
-      // Move documents to "Без категории" or just warn
       await Category.reassignDocuments(req.params.id);
     }
 
@@ -170,8 +163,6 @@ exports.deleteCategory = async (req, res) => {
     res.status(500).json({ error: 'Ошибка сервера' });
   }
 };
-
-// --- Stats ---
 
 exports.downloadStats = async (req, res) => {
   try {

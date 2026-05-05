@@ -1,5 +1,3 @@
-// Librarian documents JS
-
 function openAddDocModal() {
   document.getElementById('addDocForm').reset();
   openModal('addDocModal');

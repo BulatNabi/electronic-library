@@ -15,7 +15,6 @@
       <h1>Каталог документов</h1>
     </div>
 
-    <!-- Search -->
     <div class="search-bar">
       <form id="searchForm" action="/reader/search" method="GET" class="search-form">
         <input type="text" name="query" id="search-query" placeholder="Поиск по названию или автору..."
@@ -33,7 +32,6 @@
       </form>
     </div>
 
-    <!-- Documents Grid -->
     <div class="documents-grid" id="documents-grid">
       <% if (documents.length === 0) { %>
         <p class="empty-state">По вашему запросу ничего не найдено.</p>

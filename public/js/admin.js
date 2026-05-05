@@ -1,5 +1,3 @@
-// Admin panel JS
-
 function openAddUserModal() {
   document.getElementById('addUserForm').reset();
   document.getElementById('credentials-display').classList.add('hidden');
@@ -20,7 +18,6 @@ function createUser(e) {
       document.getElementById('cred-password').textContent = res.credentials.password;
       document.getElementById('credentials-display').classList.remove('hidden');
       showNotification(res.message, 'success');
-      setTimeout(function() { location.reload(); }, 3000);
     } else {
       showNotification(res.error, 'error');
     }

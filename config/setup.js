@@ -13,12 +13,10 @@ async function setup() {
 
   console.log('Connected to MySQL.');
 
-  // Read and execute schema
   const schema = fs.readFileSync(path.join(__dirname, 'schema.sql'), 'utf8');
   await connection.query(schema);
   console.log('Schema created.');
 
-  // Read and execute seed
   const seed = fs.readFileSync(path.join(__dirname, 'seed.sql'), 'utf8');
   await connection.query(seed);
   console.log('Seed data inserted.');

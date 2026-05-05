@@ -31,20 +31,17 @@ router.use(isAuthenticated, isLibrarian);
 
 router.get('/', librarianController.dashboard);
 
-// Documents
 router.get('/documents', librarianController.documentList);
 router.post('/documents', upload.single('file'), librarianController.uploadDocument);
 router.get('/documents/:id', librarianController.getDocument);
 router.put('/documents/:id', upload.single('file'), librarianController.updateDocument);
 router.delete('/documents/:id', librarianController.deleteDocument);
 
-// Categories
 router.get('/categories', librarianController.categoryList);
 router.post('/categories', librarianController.createCategory);
 router.put('/categories/:id', librarianController.updateCategory);
 router.delete('/categories/:id', librarianController.deleteCategory);
 
-// Stats
 router.get('/stats', librarianController.downloadStats);
 
 module.exports = router;

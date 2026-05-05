@@ -1,5 +1,3 @@
-// Common utility functions
-
 function showNotification(message, type) {
   var el = document.getElementById('notification');
   var textEl = document.getElementById('notification-text');

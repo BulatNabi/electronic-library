@@ -3,7 +3,6 @@ const fs = require('fs');
 const path = require('path');
 
 async function seedDemo() {
-  // Create sample text files as demo documents
   const uploadsDir = path.join(__dirname, '..', 'public', 'uploads');
 
   const demoFiles = [
@@ -17,12 +16,10 @@ async function seedDemo() {
     { name: 'article-web.txt', content: 'Статья: Современные тенденции веб-разработки 2025.' },
   ];
 
-  // Write demo files
   for (const f of demoFiles) {
     fs.writeFileSync(path.join(uploadsDir, f.name), f.content, 'utf8');
   }
 
-  // Insert documents
   const docs = [
     { title: 'Технический отчёт за 2024 год', author: 'Сидоров А.В.', year: 2024, annotation: 'Подробный технический отчёт о результатах разработки и тестирования информационной системы. Включает анализ производительности, выявленные проблемы и рекомендации по улучшению.', filePath: 'report-2024.txt', categoryId: 1 },
     { title: 'Основы JavaScript', author: 'Петров И.С.', year: 2023, annotation: 'Учебное пособие для студентов, изучающих веб-программирование. Рассматриваются основы языка JavaScript, работа с DOM, события, асинхронное программирование с Promise и async/await.', filePath: 'textbook-js.txt', categoryId: 2 },
