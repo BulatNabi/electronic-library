@@ -1,6 +1,5 @@
 node_modules/
 public/uploads/*
 !public/uploads/.gitkeep
-test-results/
 .env
 .DS_Store

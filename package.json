@@ -21,9 +21,5 @@
     "express-session": "^1.19.0",
     "multer": "^2.1.1",
     "mysql2": "^3.22.3"
-  },
-  "devDependencies": {
-    "@playwright/test": "^1.59.1",
-    "playwright": "^1.59.1"
   }
 }
