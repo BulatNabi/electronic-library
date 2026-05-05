@@ -16,6 +16,17 @@
       <button class="btn btn-primary" onclick="openAddCategoryModal()">Добавить категорию</button>
     </div>
 
+    <div class="search-bar">
+      <form id="searchForm" action="/librarian/categories" method="GET" class="search-form">
+        <input type="text" name="query" id="search-query" placeholder="Поиск по названию категории..."
+               class="form-control" value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>">
+        <button type="submit" class="btn btn-primary">Найти</button>
+        <% if (typeof searchQuery !== 'undefined' && searchQuery) { %>
+          <a href="/librarian/categories" class="btn btn-outline">Сбросить</a>
+        <% } %>
+      </form>
+    </div>
+
     <table class="table">
       <thead>
         <tr>
@@ -39,6 +50,10 @@
         <% }) %>
       </tbody>
     </table>
+
+    <% if (categories.length === 0) { %>
+      <p class="empty-state">Категории не найдены.</p>
+    <% } %>
   </main>
 
   <div id="addCategoryModal" class="modal hidden">

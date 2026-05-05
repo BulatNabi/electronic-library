@@ -1,6 +1,8 @@
 const User = require('../models/User');
 const Role = require('../models/Role');
 const bcrypt = require('bcryptjs');
+const fs = require('fs');
+const path = require('path');
 
 exports.dashboard = (req, res) => {
   res.redirect('/admin/users');
@@ -8,9 +10,28 @@ exports.dashboard = (req, res) => {
 
 exports.userList = async (req, res) => {
   try {
-    const users = await User.findAll();
+    const { query, role } = req.query;
+    let users;
+
+    if (query || (role && role !== 'all')) {
+      users = await User.search(query, role);
+    } else {
+      users = await User.findAll();
+    }
+
     const roles = await Role.findAll();
-    res.render('admin/users', { title: 'Управление пользователями', users, roles });
+
+    if (req.xhr || req.headers.accept?.includes('json')) {
+      return res.json({ users });
+    }
+
+    res.render('admin/users', {
+      title: 'Управление пользователями',
+      users,
+      roles,
+      searchQuery: query || '',
+      searchRole: role || ''
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Ошибка сервера' });
@@ -69,6 +90,50 @@ exports.updateUser = async (req, res) => {
   }
 };
 
+exports.uploadPhoto = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(404).json({ error: 'Пользователь не найден' });
+
+    if (!req.file) {
+      return res.status(400).json({ error: 'Фото не прикреплено.' });
+    }
+
+    if (user.Photo) {
+      const oldPhoto = path.join(__dirname, '..', 'public', 'uploads', user.Photo);
+      if (fs.existsSync(oldPhoto)) {
+        fs.unlinkSync(oldPhoto);
+      }
+    }
+
+    await User.updatePhoto(req.params.id, req.file.filename);
+    res.json({ success: true, message: 'Фото обновлено.', photo: req.file.filename });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Ошибка сервера' });
+  }
+};
+
+exports.deletePhoto = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(404).json({ error: 'Пользователь не найден' });
+
+    if (user.Photo) {
+      const photoPath = path.join(__dirname, '..', 'public', 'uploads', user.Photo);
+      if (fs.existsSync(photoPath)) {
+        fs.unlinkSync(photoPath);
+      }
+      await User.updatePhoto(req.params.id, null);
+    }
+
+    res.json({ success: true, message: 'Фото удалено.' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Ошибка сервера' });
+  }
+};
+
 exports.deleteUser = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
@@ -76,6 +141,11 @@ exports.deleteUser = async (req, res) => {
 
     if (user.ID_User === req.session.user.id) {
       return res.status(400).json({ error: 'Нельзя удалить свою учётную запись.' });
+    }
+
+    if (user.Photo) {
+      const photoPath = path.join(__dirname, '..', 'public', 'uploads', user.Photo);
+      if (fs.existsSync(photoPath)) fs.unlinkSync(photoPath);
     }
 
     await User.delete(req.params.id);

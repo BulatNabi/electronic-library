@@ -45,6 +45,25 @@ class Category {
     return rows[0].count;
   }
 
+  static async searchWithCount(query) {
+    let sql = `
+      SELECT c.*, COUNT(d.ID_Document) as doc_count
+      FROM Categories c
+      LEFT JOIN Documents d ON c.ID_Category = d.ID_Category
+      WHERE 1=1
+    `;
+    const params = [];
+
+    if (query && query.trim()) {
+      sql += ' AND c.Category_name LIKE ?';
+      params.push(`%${query.trim()}%`);
+    }
+
+    sql += ' GROUP BY c.ID_Category ORDER BY c.Category_name';
+    const [rows] = await db.query(sql, params);
+    return rows;
+  }
+
   static async reassignDocuments(categoryId) {
     let [rows] = await db.query("SELECT ID_Category FROM Categories WHERE Category_name = 'Без категории'");
     let defaultCatId;

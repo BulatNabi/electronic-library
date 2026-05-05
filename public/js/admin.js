@@ -84,3 +84,61 @@ function changeRole(userId, roleId) {
     }
   });
 }
+
+function openPhotoModal(userId) {
+  document.getElementById('photo-userId').value = userId;
+  document.getElementById('photo-file').value = '';
+
+  ajaxRequest('GET', '/admin/users/' + userId, null, function(status, res) {
+    if (status === 200) {
+      var preview = document.getElementById('photo-preview');
+      var deleteBtn = document.getElementById('delete-photo-btn');
+      if (res.Photo) {
+        preview.innerHTML = '<img src="/uploads/' + res.Photo + '" alt="Фото" class="photo-preview-img">';
+        deleteBtn.style.display = 'inline-block';
+      } else {
+        preview.innerHTML = '<div class="user-photo-placeholder-lg">' + res.FullName.charAt(0) + '</div>';
+        deleteBtn.style.display = 'none';
+      }
+      openModal('photoModal');
+    }
+  });
+}
+
+function uploadPhoto(e) {
+  e.preventDefault();
+  var userId = document.getElementById('photo-userId').value;
+  var formData = new FormData();
+  var fileInput = document.getElementById('photo-file');
+
+  if (!fileInput.files[0]) {
+    showNotification('Выберите файл', 'error');
+    return;
+  }
+
+  formData.append('photo', fileInput.files[0]);
+
+  ajaxRequest('POST', '/admin/users/' + userId + '/photo', formData, function(status, res) {
+    if (res.success) {
+      showNotification(res.message, 'success');
+      closeModal('photoModal');
+      setTimeout(function() { location.reload(); }, 1000);
+    } else {
+      showNotification(res.error, 'error');
+    }
+  });
+}
+
+function deletePhoto() {
+  var userId = document.getElementById('photo-userId').value;
+
+  ajaxRequest('DELETE', '/admin/users/' + userId + '/photo', null, function(status, res) {
+    if (res.success) {
+      showNotification(res.message, 'success');
+      closeModal('photoModal');
+      setTimeout(function() { location.reload(); }, 1000);
+    } else {
+      showNotification(res.error, 'error');
+    }
+  });
+}

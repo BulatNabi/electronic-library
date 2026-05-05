@@ -16,9 +16,30 @@
       <button class="btn btn-primary" onclick="openAddUserModal()">Добавить пользователя</button>
     </div>
 
+    <div class="search-bar">
+      <form id="searchForm" action="/admin/users" method="GET" class="search-form">
+        <input type="text" name="query" id="search-query" placeholder="Поиск по ФИО, логину или email..."
+               class="form-control" value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>">
+        <select name="role" id="search-role" class="form-control">
+          <option value="all">Все роли</option>
+          <% roles.forEach(role => { %>
+            <option value="<%= role.ID_Role %>"
+                    <%= (typeof searchRole !== 'undefined' && searchRole == role.ID_Role) ? 'selected' : '' %>>
+              <%= role.Role_name %>
+            </option>
+          <% }) %>
+        </select>
+        <button type="submit" class="btn btn-primary">Найти</button>
+        <% if ((typeof searchQuery !== 'undefined' && searchQuery) || (typeof searchRole !== 'undefined' && searchRole && searchRole !== 'all')) { %>
+          <a href="/admin/users" class="btn btn-outline">Сбросить</a>
+        <% } %>
+      </form>
+    </div>
+
     <table class="table">
       <thead>
         <tr>
+          <th>Фото</th>
           <th>ID</th>
           <th>Логин</th>
           <th>ФИО</th>
@@ -30,6 +51,15 @@
       <tbody id="users-table-body">
         <% users.forEach(user => { %>
           <tr id="user-row-<%= user.ID_User %>">
+            <td>
+              <div class="user-photo-cell" id="photo-cell-<%= user.ID_User %>">
+                <% if (user.Photo) { %>
+                  <img src="/uploads/<%= user.Photo %>" alt="Фото" class="user-photo-thumb">
+                <% } else { %>
+                  <div class="user-photo-placeholder"><%= user.FullName.charAt(0) %></div>
+                <% } %>
+              </div>
+            </td>
             <td><%= user.ID_User %></td>
             <td><%= user.Login %></td>
             <td><%= user.FullName %></td>
@@ -47,6 +77,7 @@
               </select>
             </td>
             <td class="actions">
+              <button class="btn btn-sm btn-outline" onclick="openPhotoModal(<%= user.ID_User %>)">Фото</button>
               <button class="btn btn-sm btn-outline" onclick="openEditUserModal(<%= user.ID_User %>)">Редактировать</button>
               <% if (user.ID_User !== currentUser.id) { %>
                 <button class="btn btn-sm btn-danger" onclick="deleteUser(<%= user.ID_User %>)">Удалить</button>
@@ -56,6 +87,10 @@
         <% }) %>
       </tbody>
     </table>
+
+    <% if (users.length === 0) { %>
+      <p class="empty-state">Пользователи не найдены.</p>
+    <% } %>
   </main>
 
   <div id="addUserModal" class="modal hidden">
@@ -108,6 +143,27 @@
           <input type="email" id="edit-email" name="email" required class="form-control">
         </div>
         <button type="submit" class="btn btn-primary btn-block">Сохранить</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="photoModal" class="modal hidden">
+    <div class="modal-content modal-sm">
+      <div class="modal-header">
+        <h2>Фото пользователя</h2>
+        <button class="modal-close" onclick="closeModal('photoModal')">&times;</button>
+      </div>
+      <div id="photo-preview" class="photo-preview"></div>
+      <form id="photoForm" onsubmit="uploadPhoto(event)" enctype="multipart/form-data">
+        <input type="hidden" id="photo-userId">
+        <div class="form-group">
+          <label for="photo-file">Выберите изображение</label>
+          <input type="file" id="photo-file" name="photo" class="form-control" accept=".jpg,.jpeg,.png,.gif,.webp">
+        </div>
+        <div class="modal-actions">
+          <button type="submit" class="btn btn-primary">Загрузить</button>
+          <button type="button" class="btn btn-danger" id="delete-photo-btn" onclick="deletePhoto()">Удалить фото</button>
+        </div>
       </form>
     </div>
   </div>

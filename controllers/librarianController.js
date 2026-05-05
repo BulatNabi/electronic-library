@@ -10,9 +10,23 @@ exports.dashboard = (req, res) => {
 
 exports.documentList = async (req, res) => {
   try {
-    const documents = await Document.findAll();
+    const { query, category } = req.query;
+    let documents;
+
+    if (query || (category && category !== 'all')) {
+      documents = await Document.search(query, category);
+    } else {
+      documents = await Document.findAll();
+    }
+
     const categories = await Category.findAll();
-    res.render('librarian/documents', { title: 'Управление документами', documents, categories });
+    res.render('librarian/documents', {
+      title: 'Управление документами',
+      documents,
+      categories,
+      searchQuery: query || '',
+      searchCategory: category || ''
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Ошибка сервера' });
@@ -100,8 +114,20 @@ exports.deleteDocument = async (req, res) => {
 
 exports.categoryList = async (req, res) => {
   try {
-    const categories = await Category.findAllWithCount();
-    res.render('librarian/categories', { title: 'Управление категориями', categories });
+    const { query } = req.query;
+    let categories;
+
+    if (query) {
+      categories = await Category.searchWithCount(query);
+    } else {
+      categories = await Category.findAllWithCount();
+    }
+
+    res.render('librarian/categories', {
+      title: 'Управление категориями',
+      categories,
+      searchQuery: query || ''
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Ошибка сервера' });
