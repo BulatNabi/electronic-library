@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <%- include('../partials/header') %>
+  <%- include('../partials/notification') %>
+
+  <main class="container">
+    <div class="page-header">
+      <h1>Мой профиль</h1>
+    </div>
+
+    <div class="profile-card">
+      <div class="profile-photo-section">
+        <div id="profile-photo-preview">
+          <% if (user.Photo) { %>
+            <img src="/uploads/<%= user.Photo %>" alt="Фото" class="profile-photo-img">
+          <% } else { %>
+            <div class="user-photo-placeholder-lg"><%= user.FullName.charAt(0) %></div>
+          <% } %>
+        </div>
+
+        <form id="profilePhotoForm" onsubmit="uploadProfilePhoto(event)" enctype="multipart/form-data">
+          <div class="form-group">
+            <input type="file" id="profile-photo-file" name="photo" class="form-control" accept=".jpg,.jpeg,.png,.gif,.webp">
+          </div>
+          <div class="profile-photo-actions">
+            <button type="submit" class="btn btn-primary btn-sm">Загрузить фото</button>
+            <% if (user.Photo) { %>
+              <button type="button" class="btn btn-danger btn-sm" onclick="deleteProfilePhoto()">Удалить фото</button>
+            <% } %>
+          </div>
+        </form>
+      </div>
+
+      <div class="profile-info">
+        <div class="meta-row">
+          <span class="meta-label">ФИО:</span>
+          <span class="meta-value"><%= user.FullName %></span>
+        </div>
+        <div class="meta-row">
+          <span class="meta-label">Логин:</span>
+          <span class="meta-value"><%= user.Login %></span>
+        </div>
+        <div class="meta-row">
+          <span class="meta-label">Email:</span>
+          <span class="meta-value"><%= user.Email %></span>
+        </div>
+        <div class="meta-row">
+          <span class="meta-label">Роль:</span>
+          <span class="meta-value"><%= user.Role_name %></span>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="/js/common.js"></script>
+  <script>
+    function uploadProfilePhoto(e) {
+      e.preventDefault();
+      var fileInput = document.getElementById('profile-photo-file');
+      if (!fileInput.files[0]) {
+        showNotification('Выберите файл', 'error');
+        return;
+      }
+      var formData = new FormData();
+      formData.append('photo', fileInput.files[0]);
+
+      ajaxRequest('POST', '/auth/profile/photo', formData, function(status, res) {
+        if (res.success) {
+          showNotification(res.message, 'success');
+          setTimeout(function() { location.reload(); }, 1000);
+        } else {
+          showNotification(res.error, 'error');
+        }
+      });
+    }
+
+    function deleteProfilePhoto() {
+      ajaxRequest('DELETE', '/auth/profile/photo', null, function(status, res) {
+        if (res.success) {
+          showNotification(res.message, 'success');
+          setTimeout(function() { location.reload(); }, 1000);
+        } else {
+          showNotification(res.error, 'error');
+        }
+      });
+    }
+  </script>
+</body>
+</html>

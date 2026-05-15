@@ -15,8 +15,13 @@
         <% } %>
       </nav>
       <div class="user-info">
-        <span class="user-name"><%= currentUser.fullName %></span>
-        <span class="user-role">(<%= currentUser.role %>)</span>
+        <a href="/auth/profile" class="user-info-link">
+          <% if (currentUser.photo) { %>
+            <img src="/uploads/<%= currentUser.photo %>" alt="Фото" class="header-photo">
+          <% } %>
+          <span class="user-name"><%= currentUser.fullName %></span>
+          <span class="user-role">(<%= currentUser.role %>)</span>
+        </a>
         <a href="/auth/logout" class="btn btn-sm btn-outline">Выход</a>
       </div>
     <% } %>
