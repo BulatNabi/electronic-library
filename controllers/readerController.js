@@ -84,8 +84,16 @@ exports.downloadDocument = async (req, res) => {
 
 exports.favoritesList = async (req, res) => {
   try {
-    const favorites = await Favorite.getUserFavorites(req.session.user.id);
-    res.render('reader/favorites', { title: 'Избранное', favorites });
+    const { query, category } = req.query;
+    const favorites = await Favorite.getUserFavorites(req.session.user.id, query, category);
+    const categories = await Category.findAll();
+    res.render('reader/favorites', {
+      title: 'Избранное',
+      favorites,
+      categories,
+      searchQuery: query || '',
+      searchCategory: category || ''
+    });
   } catch (err) {
     console.error(err);
     res.status(500).render('layouts/error', { title: 'Ошибка', message: 'Ошибка сервера', code: 500 });

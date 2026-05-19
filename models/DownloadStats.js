@@ -8,14 +8,30 @@ class DownloadStats {
     );
   }
 
-  static async getAggregated() {
-    const [rows] = await db.query(`
+  static async getAggregated(query, sortBy) {
+    let sql = `
       SELECT d.ID_Document, d.Title, d.Author, COUNT(ds.ID_Download) as download_count
       FROM Documents d
       LEFT JOIN DownloadStats ds ON d.ID_Document = ds.ID_Document
-      GROUP BY d.ID_Document
-      ORDER BY download_count DESC
-    `);
+    `;
+    const params = [];
+    const where = [];
+
+    if (query && query.trim()) {
+      where.push('(d.Title LIKE ? OR d.Author LIKE ?)');
+      const q = `%${query.trim()}%`;
+      params.push(q, q);
+    }
+
+    if (where.length > 0) sql += ' WHERE ' + where.join(' AND ');
+    sql += ' GROUP BY d.ID_Document';
+
+    if (sortBy === 'title') sql += ' ORDER BY d.Title';
+    else if (sortBy === 'author') sql += ' ORDER BY d.Author';
+    else if (sortBy === 'asc') sql += ' ORDER BY download_count ASC';
+    else sql += ' ORDER BY download_count DESC';
+
+    const [rows] = await db.query(sql, params);
     return rows;
   }
 

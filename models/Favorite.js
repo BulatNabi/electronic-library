@@ -1,15 +1,29 @@
 const db = require('../config/db');
 
 class Favorite {
-  static async getUserFavorites(userId) {
-    const [rows] = await db.query(`
-      SELECT f.*, d.Title, d.Author, d.Year, d.Annotation, c.Category_name
+  static async getUserFavorites(userId, query, categoryId) {
+    let sql = `
+      SELECT f.*, d.ID_Document, d.Title, d.Author, d.Year, d.Annotation, c.Category_name
       FROM Favorites f
       JOIN Documents d ON f.ID_Document = d.ID_Document
       LEFT JOIN Categories c ON d.ID_Category = c.ID_Category
       WHERE f.ID_User = ?
-      ORDER BY f.Added_date DESC
-    `, [userId]);
+    `;
+    const params = [userId];
+
+    if (query && query.trim()) {
+      sql += ' AND (d.Title LIKE ? OR d.Author LIKE ?)';
+      const q = `%${query.trim()}%`;
+      params.push(q, q);
+    }
+
+    if (categoryId && categoryId !== '' && categoryId !== 'all') {
+      sql += ' AND d.ID_Category = ?';
+      params.push(parseInt(categoryId));
+    }
+
+    sql += ' ORDER BY f.Added_date DESC';
+    const [rows] = await db.query(sql, params);
     return rows;
   }
 

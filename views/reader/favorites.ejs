@@ -15,8 +15,34 @@
       <h1>Избранное</h1>
     </div>
 
+    <div class="search-bar">
+      <form id="searchForm" action="/reader/favorites" method="GET" class="search-form">
+        <input type="text" name="query" id="search-query" placeholder="Поиск по названию или автору..."
+               class="form-control" value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>">
+        <select name="category" id="search-category" class="form-control">
+          <option value="all">Все категории</option>
+          <% categories.forEach(cat => { %>
+            <option value="<%= cat.ID_Category %>"
+                    <%= (typeof searchCategory !== 'undefined' && searchCategory == cat.ID_Category) ? 'selected' : '' %>>
+              <%= cat.Category_name %>
+            </option>
+          <% }) %>
+        </select>
+        <button type="submit" class="btn btn-primary">Найти</button>
+        <% if ((typeof searchQuery !== 'undefined' && searchQuery) || (typeof searchCategory !== 'undefined' && searchCategory && searchCategory !== 'all')) { %>
+          <a href="/reader/favorites" class="btn btn-outline">Сбросить</a>
+        <% } %>
+      </form>
+    </div>
+
     <% if (favorites.length === 0) { %>
-      <p class="empty-state">В вашем списке избранного пока нет документов.</p>
+      <p class="empty-state">
+        <% if ((typeof searchQuery !== 'undefined' && searchQuery) || (typeof searchCategory !== 'undefined' && searchCategory && searchCategory !== 'all')) { %>
+          По вашему запросу в избранном ничего не найдено.
+        <% } else { %>
+          В вашем списке избранного пока нет документов.
+        <% } %>
+      </p>
     <% } else { %>
       <div class="documents-grid">
         <% favorites.forEach(fav => { %>

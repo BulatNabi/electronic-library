@@ -14,30 +14,57 @@
       <h1><%= title %></h1>
     </div>
 
-    <% if (stats.length === 0 || stats.every(s => s.download_count === 0)) { %>
+    <div class="search-bar">
+      <form id="searchForm" action="/librarian/stats" method="GET" class="search-form">
+        <input type="text" name="query" id="search-query" placeholder="Поиск по названию или автору..."
+               class="form-control" value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>">
+        <select name="sort" id="sort-select" class="form-control">
+          <option value="desc" <%= sortBy === 'desc' ? 'selected' : '' %>>Сначала популярные</option>
+          <option value="asc" <%= sortBy === 'asc' ? 'selected' : '' %>>Сначала непопулярные</option>
+          <option value="title" <%= sortBy === 'title' ? 'selected' : '' %>>По названию</option>
+          <option value="author" <%= sortBy === 'author' ? 'selected' : '' %>>По автору</option>
+        </select>
+        <button type="submit" class="btn btn-primary">Найти</button>
+        <% if ((typeof searchQuery !== 'undefined' && searchQuery) || sortBy !== 'desc') { %>
+          <a href="/librarian/stats" class="btn btn-outline">Сбросить</a>
+        <% } %>
+      </form>
+    </div>
+
+    <% if (stats.length === 0) { %>
+      <p class="empty-state">
+        <% if (typeof searchQuery !== 'undefined' && searchQuery) { %>
+          По вашему запросу ничего не найдено.
+        <% } else { %>
+          Документов пока нет.
+        <% } %>
+      </p>
+    <% } else if (stats.every(s => s.download_count === 0)) { %>
       <p class="empty-state">Скачиваний пока не было.</p>
     <% } %>
 
-    <table class="table">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Название документа</th>
-          <th>Автор</th>
-          <th>Количество скачиваний</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% stats.forEach(s => { %>
+    <% if (stats.length > 0) { %>
+      <table class="table">
+        <thead>
           <tr>
-            <td><%= s.ID_Document %></td>
-            <td><%= s.Title %></td>
-            <td><%= s.Author %></td>
-            <td><%= s.download_count %></td>
+            <th>ID</th>
+            <th>Название документа</th>
+            <th>Автор</th>
+            <th>Количество скачиваний</th>
           </tr>
-        <% }) %>
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          <% stats.forEach(s => { %>
+            <tr>
+              <td><%= s.ID_Document %></td>
+              <td><%= s.Title %></td>
+              <td><%= s.Author %></td>
+              <td><%= s.download_count %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } %>
   </main>
 </body>
 </html>

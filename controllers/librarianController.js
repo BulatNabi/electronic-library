@@ -192,8 +192,14 @@ exports.deleteCategory = async (req, res) => {
 
 exports.downloadStats = async (req, res) => {
   try {
-    const stats = await DownloadStats.getAggregated();
-    res.render('librarian/stats', { title: 'Статистика скачиваний', stats });
+    const { query, sort } = req.query;
+    const stats = await DownloadStats.getAggregated(query, sort);
+    res.render('librarian/stats', {
+      title: 'Статистика скачиваний',
+      stats,
+      searchQuery: query || '',
+      sortBy: sort || 'desc'
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Ошибка сервера' });
